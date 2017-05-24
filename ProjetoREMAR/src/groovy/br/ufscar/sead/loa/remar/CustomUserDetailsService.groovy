@@ -1,4 +1,4 @@
-package br.ufscar.sead.loa.remar
+/**package br.ufscar.sead.loa.remar
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.userdetails.GrailsUser
@@ -8,10 +8,11 @@ import grails.transaction.Transactional
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-
+ */
 /**
  * Created by marcus on 19/09/16.
  */
+/**
 class CustomUserDetailsService implements GrailsUserDetailsService {
 
     static final List NO_ROLES = [new SimpleGrantedAuthority(SpringSecurityUtils.NO_ROLE)]
@@ -41,3 +42,4 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
     }
 
 }
+*/

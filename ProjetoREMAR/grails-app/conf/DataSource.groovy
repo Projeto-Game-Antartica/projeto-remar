@@ -19,6 +19,8 @@ environments {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate'
             url = "jdbc:mysql://localhost/remar"
+            username="root"
+            password="root"
         }
     }
     test {

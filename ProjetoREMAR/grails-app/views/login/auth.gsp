@@ -17,6 +17,38 @@
                 <div class="card-image" style="padding-bottom: 20px;">
                     <img src="/assets/img/logo/logo-remar-preto-transparente.png">
                 </div> <!-- card-image -->
+
+                <!-- BEGIN IDP SELECTION SAML-->
+            <sec:ifNotLoggedIn>
+                <sec:loginLink>Login (default IDP)</sec:loginLink> | <sec:loginLink selectIdp="true">Login (selecting IDP)</sec:loginLink> 	| <g:link controller="idp" action="list">Manage IDP</g:link>
+            </sec:ifNotLoggedIn>
+
+                    <div style="margin-left: 20px;">
+                        <h1>IDP selection</h1>
+
+                        <form action="${request.contextPath}${grailsApplication.config.grails.plugin.springsecurity.saml.loginFormUrl}" method="GET">
+                            <%-- We send this attribute to tell the processing filter that we want to initialize login --%>
+                            <input type="hidden" name="login" value="true"/>
+                            <table>
+                                <tr>
+                                    <td><b>Select IDP: </b></td>
+                                    <td>
+                                        <g:each in="${applicationContext.getBean('metadata').IDPEntityNames}" var="idpItem">
+                                            <input type="radio" name="idp" id="idp_${idpItem}" value="${idpItem}"/>
+                                            <label for="idp_${idpItem}">${idpItem}</label>
+                                            <br/>
+                                        </g:each>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td><input type="submit" value="Login"/></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                <!-- END IDP SELECTION SAML-->
+
                 <form action="/j_spring_security_check" method="POST">
                     <g:if test="${flash.message}">
                     <div class="input-field" id="input-login-error">
