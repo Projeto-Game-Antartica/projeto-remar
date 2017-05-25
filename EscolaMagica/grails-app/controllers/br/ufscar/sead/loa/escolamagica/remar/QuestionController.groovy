@@ -23,6 +23,8 @@ class QuestionController {
 
         def list = Question.findAllByOwnerId(session.user.id)
         if(!list) {
+            println "Questions list for user " + session.user.id + "is empty."
+            println "Generating questions automatically."
             new Question(title: 'Questão 1 – Nível 1', answers: ['Alternativa 1', 'Alternativa 2', 'Alternativa 3', 'Alternativa 4'],
                     correctAnswer: 0, level: 1, taskId: session.taskId, ownerId: session.user.id).save flush: true
             new Question(title: 'Questão 2 – Nível 1', answers: ['Alternativa 1', 'Alternativa 2', 'Alternativa 3', 'Alternativa 4'],
@@ -62,7 +64,6 @@ class QuestionController {
 
     def confirming() {
         log.debug params.id
-        //redirect(controller: "process",action: "completeTask", id: "confirming")
     }
 
     def show(Question questionInstance) {
@@ -75,16 +76,13 @@ class QuestionController {
 
     def createXML() {
 
-        //   def servletContext = ServletContextHolder.servletContext
-        //  def storagePath = servletContext.getRealPath("/")
-        //   log.debug storagePath
+
 
         ArrayList<Integer> list_questionId = new ArrayList<Integer>() ;
         ArrayList<Question> questionList = new ArrayList<Question>();
         list_questionId.addAll(params.list_id);
         for (int i=0; i<list_questionId.size();i++){
             questionList.add(Question.findById(list_questionId[i]));
-
         }
 
         def dataPath = servletContext.getRealPath("/data")
@@ -92,7 +90,8 @@ class QuestionController {
         instancePath.mkdirs()
         log.debug instancePath
 
-        def fw = new FileWriter("$instancePath/perguntas.xml")
+        def fw = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream("$instancePath/perguntas.xml"), "UTF-8"));
         def xml = new MarkupBuilder(fw)
         xml.mkp.xmlDeclaration(version: "1.0", encoding: "utf-8")
         xml.Perguntas() {
@@ -103,7 +102,6 @@ class QuestionController {
                         list.push(it);
                 }
 
-               // def questionList = Question.findAllByOwnerIdAndLevel(session.user.id, String.valueOf(i + 1))
                 if (!list.isEmpty()) {
                     int j = 0
                     int k = 0
@@ -203,9 +201,9 @@ class QuestionController {
             return
         }
 
-        questionInstance.delete flush: true
+        println "Delete Question ID = " + questionInstance.id
 
-        redirect action: "index"
+        questionInstance.delete flush: true
     }
 
     protected void notFound() {
@@ -257,7 +255,9 @@ class QuestionController {
         instancePath.mkdirs()
         log.debug instancePath
 
-        def fw = new FileWriter("$instancePath/exportQuestions.csv")
+        def fw = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream("$instancePath/exportQuestions.csv"), "UTF-8"));
+
         for(int i=0; i<questionList.size();i++){
             fw.write(questionList.getAt(i).level + ";" + questionList.getAt(i).title + ";" + questionList.getAt(i).answers[0] + ";" + questionList.getAt(i).answers[1] + ";" +
                      questionList.getAt(i).answers[2] + ";" + questionList.getAt(i).answers[3] + ";" + (questionList.getAt(i).correctAnswer +1) + ";dica;tema" +";\n" )
@@ -275,9 +275,14 @@ class QuestionController {
 
     @Transactional
     def generateQuestions(){
+        /*
+         * Importa questões de um arquivo CSV com valores separados por ponto-e-vírgula
+         */
+
         MultipartFile csv = params.csv
 
-        csv.inputStream.toCsvReader([ 'separatorChar': ';']).eachLine { row ->
+        csv.inputStream.toCsvReader([ 'separatorChar': ';', 'charset':'UTF-8']).eachLine { row ->
+            println row
             Question questionInstance = new Question()
             questionInstance.level = row[0] ?: "NA";
             questionInstance.title = row[1] ?: "NA";
@@ -290,12 +295,11 @@ class QuestionController {
             questionInstance.taskId = session.taskId as String
             questionInstance.ownerId = session.user.id as long
             questionInstance.save flush: true
-            println(questionInstance.taskId)
-            println(questionInstance)
-            println(questionInstance.errors)
-
-
+            // println(questionInstance.taskId)
+            // println(questionInstance)
+            // println(questionInstance.errors)
         }
+
         redirect(action: index())
     }
 }

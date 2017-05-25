@@ -121,7 +121,7 @@ class ResourceController {
             resourceInstance.desktop = 'desktop' in json.outputs
             resourceInstance.moodle = 'moodle' in json.outputs
             resourceInstance.web = 'web' in json.outputs
-            resourceInstance.type = json.type
+            resourceInstance.type = json.type ? json.type : "html"
             resourceInstance.width = json.vars.width
             resourceInstance.height = json.vars.height
 
@@ -232,7 +232,8 @@ class ResourceController {
                     }
                 }
             } else {
-                println "Electron skipped. Project type is [" + resourceInstance.type + "]."
+                if (resourceInstance.type != "html") println "Electron skipped. Project type is [" + resourceInstance.type + "]."
+                else if (!resourceInstance.desktop) println "Electron skipped. Project is not desktop."
             }
 
 
@@ -250,7 +251,8 @@ class ResourceController {
                     }
                 }
             } else {
-                println "Crosswalk skipped. Project type is [" + resourceInstance.type + "]."
+                if (resourceInstance.type != "html") println "Crosswalk skipped. Project type is [" + resourceInstance.type + "]."
+                else if (!resourceInstance.android) println "Crosswalk skipped. Project is not android."
             }
 
             if (Environment.current == Environment.DEVELOPMENT) {
@@ -314,7 +316,19 @@ class ResourceController {
 
         if (resourceInstance.owner == session.user || session.user.username == 'admin') {
 
-           try{
+           try {
+               // Verifica se não há jogos "em customização" do modelo
+               def processes = Propeller.instance.getProcessInstancesByOwner(session.user.id as long)
+
+               for (process in processes) {
+                   if (process.definition.uri == resourceInstance.uri &&
+                       process.getVariable("inactive") != "1" &&
+                       process.getVariable("exportedResourceId") == null) {
+                       // Se houver algum jogo em customização, lança uma exceção
+                       throw new Exception("pendingProcessError")
+                   }
+               }
+
                resourceInstance.delete flush: true
 
                new AntBuilder().sequential {
@@ -331,9 +345,9 @@ class ResourceController {
                    def resp = http.get(path: '/manager/text/undeploy', query: [path: "/${resourceInstance.uri}"])
                    resp = GrailsIOUtils.toString(resp)
                    if (resp.indexOf('OK') != -1) log.debug "Resource successfully undeployed"
-                   else log.debug "Failed trying to undeploy resource"
+                   else log.debug "ERROR: Failed trying to undeploy resource"
                }
-               else log.debug "Skipped undeploy"
+               else log.debug "WARNING: Skipped undeploy"
 
                if(grailsApplication.config.dspace.restUrl) { //se existir dspace
                    MongoHelper.instance.removeDataFromUri('resource_dspace',resourceInstance.uri)
@@ -341,11 +355,14 @@ class ResourceController {
 
                response.status = 205
                render 205
-           }catch (Exception e) {
-                    render "sqlError"
+           } catch (Exception e) {
+               if (e.message == "pendingProcessError")
+                   render "pendingProcessError"
+               else
+                   render "sqlError"
            }
         } else {
-            log.debug "Someone is trying to delete a resource that belongs to other user"
+            log.debug "WARNING: Someone is trying to delete a resource that belongs to other user"
         }
     }
 

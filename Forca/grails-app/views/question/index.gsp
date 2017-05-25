@@ -6,7 +6,7 @@
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="/forca/css/materialize.css" media="screen,projection"/>
-    <link rel="stylesheet" type="text/css" href="/forca/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/forca/css/question.css">
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -15,6 +15,8 @@
     <g:javascript src="editableTable.js"/>
     <g:javascript src="scriptTable.js"/>
     <g:javascript src="validate.js"/>
+    <g:javascript src="question.js"/>
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
     <meta property="user-name" content="${userName}"/>
@@ -29,24 +31,22 @@
 <body>
 <div class="cluster-header">
     <p class="text-teal text-darken-3 left-align margin-bottom" style="font-size: 28px;">
-        <i class="small material-icons left">grid_on</i>Forca - Tabela de Questões
+        Forca - Tabela de Questões
     </p>
 </div>
 
 
 <div class="row">
     <div class="col s3 offset-s9">
-        <input type="text" id="SearchLabel" placeholder="Buscar"/>
+        <input type="text" id="SearchLabel" class="remar-input" placeholder="Buscar"/>
     </div>
 </div>
 
 <table class="highlight" id="table" style="margin-top: -30px;">
     <thead>
     <tr>
-        <th>Selecionar %{--<div class="row">--}%
+        <th>Selecionar
             <div class="row" style="margin-bottom: -10px;">
-                %{--<input class="filled-in" type="checkbox" id="BtnCheckAll" onclick="check_all()"> <label for="BtnCheckAll"></label>--}%
-                %{--<input class="filled-in" type="checkbox" id="BtnUnCheckAll" onclick="uncheck_all()"> <label for="BtnUnCheckAll"></label>--}%
 
                 <button style="margin-left: 3px; background-color: #795548;" class="btn-floating" id="BtnCheckAll"
                         onclick="check_all()"><i class="material-icons">check_box_outline_blank</i></button>
@@ -114,23 +114,22 @@
 <div class="row">
     <div class="col s2">
         <button class="btn waves-effect waves-light my-orange" type="submit" name="save" id="save">Enviar
-            <i class="material-icons right">send</i>
         </button>
     </div>
 
     <div class="col s1 offset-s6">
         <a data-target="createModal" name="create"
-           class="btn-floating btn-large waves-effect waves-light modal-trigger my-orange tooltipped" data-tooltip="Criar questão"><i
-                class="material-icons">add</i></a>
+           -           class="btn-floating btn-large waves-effect waves-light modal-trigger my-orange tooltipped" data-tooltip="Criar questão"><i
+                -                class="material-icons">add</i></a>
     </div>
 
     <div class="col s1 m1 l1">
-        <a onclick="_delete()" class=" btn-floating btn-large waves-effect waves-light my-orange tooltipped" data-tooltip="Exluir questão" ><i class="material-icons">delete</i></a>
+              <a onclick="_delete()" class=" btn-floating btn-large waves-effect waves-light my-orange tooltipped" data-tooltip="Exluir questão" ><i class="material-icons">delete</i></a>
     </div>
 
     <div class="col s1">
         <a data-target="uploadModal"  class="btn-floating btn-large waves-effect waves-light my-orange modal-trigger tooltipped" data-tooltip="Upload de arquivo .csv"><i
-                class="material-icons">file_upload</i></a>
+                              class="material-icons">file_upload</i></a>
     </div>
     <div class="col s1">
         <a class="btn-floating btn-large waves-effect waves-light my-orange tooltipped" data-tooltip="Exportar questões para .csv"><i
@@ -141,59 +140,62 @@
 
 
 <!-- Modal Structure -->
-<div id="createModal" class="modal">
-    <div class="modal-content">
-
-                <h4>Criar Questão <i class="material-icons tooltipped" data-position="right" data-delay="30" data-tooltip="Respostas não devem possuir números nem caracteres especiais.">info</i></h4>
-
-
-        <div class="row">
-            <g:form url="[resource: questionInstance, action: 'newQuestion']">
+<div id="createModal" class="modal remar-modal">
+    <g:form url="[resource: questionInstance, action: 'newQuestion']">
+        <div class="modal-content">
+            <h4>Criar Questão <i class="material-icons tooltipped" data-position="right" data-delay="30" data-tooltip="Respostas não devem possuir números nem caracteres especiais.">info</i> </h4>
+            <div class="row">
                 <g:render template="form"/>
-                <br/>
-                <g:submitButton name="create" class="btn btn-success btn-lg my-orange"
-                                value="${message(code: 'default.button.create.label', default: 'Create')}"/>
-            </g:form>
+            </div>
         </div>
-    </div>
+        <div class="modal-footer">
+            <a href="#!" class="save modal-action modal-close btn waves-effect waves-light remar-orange" action="create"
+               onclick="$(this).closest('form').submit()" name="create">Criar</a>
+            <a href="#!" class="save modal-action modal-close btn waves-effect waves-light remar-orange">Cancelar</a>
+        </div>
+    </g:form>
 </div>
 
-<!-- Modal Structure -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <h4>Editar Questão</h4>
-        <g:form url="[resource: questionInstance, action: 'update']" method="PUT">
 
-                <input id="editVersion" name="version" required="" value="" type="hidden">
-                <input type="hidden" id="questionID" name="questionID">
+
+<!-- Modal -->
+<div id="editModal" class="modal remar-modal">
+    <g:form url="[resource: questionInstance, action: 'update']" method="PUT">
+        <div class="modal-content">
+            <h4>Editar Questão</h4>
+
+            <input id="editVersion" name="version" required="" value="" type="hidden">
+            <input type="hidden" id="questionID" name="questionID">
 
 
             <div class="input-field col s12">
-                <input id="editStatement" name="statement" required="" value="" type="text" class="validate" maxlength="150">
+                <input id="editStatement" name="statement" required="" value="" type="text" class="validate remar-input" maxlength="150">
                 <label id="statementLabel" for="editStatement">Pergunta</label>
             </div>
             <div class="input-field col s12">
-                <input id="editAnswer" name="answer" required="" value="" type="text" class="validate"  onkeypress="validate(event)" maxlength="48">
+                <input id="editAnswer" name="answer" required="" value="" type="text" class="validate remar-input"  onkeypress="validate(event)" maxlength="48">
                 <label id="answerLabel" for="editAnswer">Resposta</label>
             </div>
             <div class="input-field col s12">
-                <input id="editCategory" name="category" required="" value="" type="text" class="validate">
+                <input id="editCategory" name="category" required="" value="" type="text" class="validate remar-input">
                 <label id="categoryLabel" for="editCategory">Tema</label>
             </div>
 
             <div class="input-field col s12" style="display: none;">
-                <input id="editAuthor" name="author" required="" readonly="readonly" value="" type="text" class="validate">
+                <input id="editAuthor" name="author" required="" readonly="readonly" value="" type="text" class="validate remar-input">
                 <label id="authorLabel" for="editAuthor">Autor</label>
             </div>
 
-            <g:actionSubmit class="save btn btn-success btn-lg my-orange" action="update"
-                            value="${message(code: 'default.button.update.label', default: 'Salvar')}"/>
-        </g:form>
-    </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="save modal-action modal-close btn waves-effect waves-light remar-orange" action="update"
+               onclick="$(this).closest('form').submit()" name="create">Atualizar</a>
+            <a href="#!" class="modal-action modal-close btn waves-effect waves-light remar-orange">Cancelar</a>
+        </div>
+    </g:form>
 </div>
 
-
-<!-- Modal Structure -->
+            <!-- Modal Structure -->
 <div id="infoModal" class="modal">
     <div class="modal-content">
         <div id="totalQuestion">

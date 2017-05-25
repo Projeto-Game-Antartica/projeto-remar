@@ -39,12 +39,11 @@
                 <form id="add-user-form">
                     <div class="input-field col l3 offset-l2 m4">
                         <input class="user-input" type="text" placeholder="Procure por um usuário" name="term" id="search-user" required>
-                        %{--<label for="search-user"><i class="fa fa-search"></i></label>--}%
                         <input type="hidden" value="" id="user-id" name="userid">
                     </div>
                     <div class="col l3">
-                        <button style="font-size: 0.8em; top: 1.2em; position:relative;" class="btn waves-effect waves-light add-user" type="submit" name="action">Adicionar
-                            <i class="material-icons right">person_add</i>
+                        <button style="font-size: 0.8em; top: 1.2em; position:relative;" class="btn waves-effect waves-light remar-orange" type="submit" name="action">Adicionar
+
                         </button>
                     </div>
                 </form>
@@ -56,7 +55,6 @@
     <div id="modal-users" class="modal bottom-sheet">
         <div class="modal-content">
             <h4 class="left-align">Membros do grupo</h4>
-            %{--<p>A bunch of text</p>--}%
             <ul class="collection users-collection">
                 <li class="collection-item avatar left-align">
                     <img src="/data/users/${group.owner.username}/profile-picture" class="circle">
@@ -75,7 +73,7 @@
                             <g:else> </g:else>
                             </span>
                             <p class="">Usuário: ${userGroup.user.username}</p>
-                            <g:if test="${group.owner.id == session.user.id} || UserGroup.findByUserAndAdmin(session.user, true)">
+                            <g:if test="${group.owner.id == session.user.id}">
                                 <a href="#" id="${userGroup.id}"  style="position: relative; top: -2.5em; left: -1.6em;" class="secondary-content delete-modal"><i class="material-icons">delete</i></a>
                                 <g:if test="${!userGroup.admin}">
                                     <a id="make-admin-${userGroup.id}"  data-user-group-id="${userGroup.id}" href="#" data-position="left" data-tooltip="Tornar admin" class="secondary-content manage-user tooltipped"><i id="admin-${userGroup.id}" class="material-icons">star_border</i></a>
@@ -239,7 +237,7 @@
                 <g:else>
                     <div class="collapsible-header">
                 </g:else>
-                <i class="material-icons">feedback</i>Compartilhamento de Jogos
+                Compartilhamento de Jogos
             </div>
                 <div id="info" class="collapsible-body">
                     <div class="row">

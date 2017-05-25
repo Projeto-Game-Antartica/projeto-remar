@@ -136,6 +136,48 @@ class ExportedResourceController {
             render status: 200
     }
 
+    def showPlayStats(){
+
+        def lista = MongoHelper.instance.getData("playStats")
+
+        StringBuffer buffer = new StringBuffer();
+
+        for (Object o: lista) {
+            buffer.append(o.toString());
+            buffer.append("<br><br>");
+        }
+
+        render buffer
+    }
+
+    def savePlayStats(){
+
+        if (GroupExportedResources.findAllByExportedResource(ExportedResource.get(params.exportedResourceId)).size != 0) {
+            // Game exportado para um grupo
+
+            def data = [:]
+            data.timestamp = new Date().toTimestamp()
+            data.userId = session.user.id as long
+            data.exportedResourceId = params.exportedResourceId as int
+            data.level = params.level as int
+            data.sector = params.sector as int
+            data.monster = params.monster as int
+            data.gameType = params.gameType
+
+            try {
+                MongoHelper.instance.createCollection("playStats")
+                MongoHelper.instance.insertPlayStats("playStats", data)
+
+            } catch (Exception  e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+        } else {
+            log.debug "Stats skipped. Game was not published to a group."
+        }
+
+        render status: 200
+    }
+
     def publish(ExportedResource instance) {
         def exportsTo = [:]
         def handle = [:]
@@ -169,8 +211,6 @@ class ExportedResourceController {
         def android = instance.resource.android
         def web = instance.resource.web
 
-
-
         urls.web = "/published/${instance.processId}/web"
         if (desktop) {
             urls.windows = "/published/${instance.processId}/desktop/${resourceURI}-windows.zip"
@@ -194,6 +234,7 @@ class ExportedResourceController {
             def scriptUpdateElectron = "${root}/scripts/electron/update.sh"
             def scriptUpdateCrosswalk = "${root}/scripts/crosswalk/update.sh"
             def scriptUpdateUnity = "${root}/scripts/unity/update.sh"
+            def scriptBuildWeb = "${root}/scripts/unity/buildweb.sh"
 
             folders << "${desktopFolder}/windows/resources/app"
             folders << "${desktopFolder}/linux/resources/app"
@@ -281,16 +322,24 @@ class ExportedResourceController {
             }
 
             if (android) {
-                ant.sequential {
-                    chmod(perm: "+x", file: scriptUpdateCrosswalk)
-                    exec(executable: scriptUpdateCrosswalk) {
-                        arg(value: root)
-                        arg(value: mobileFolder)
-                        arg(value: resourceURI)
-                    }
-                }
+                switch (processType) {
+                    case "unity":
+                        log.debug "Unity::Android not yet implemented"
+                        break
+                    default /* HTML */:
+                        ant.sequential {
+                            chmod(perm: "+x", file: scriptUpdateCrosswalk)
+                            exec(executable: scriptUpdateCrosswalk) {
+                                arg(value: root)
+                                arg(value: mobileFolder)
+                                arg(value: resourceURI)
+                            }
+                        }
 
-                log.debug "Finished exporting Android project"
+                        log.debug "Finished exporting HTML Android project"
+                        break
+
+                }
             }
 
             if (instance.resource.moodle) {
@@ -300,16 +349,17 @@ class ExportedResourceController {
             if (web) {
                 switch (processType) {
                     case "unity" :
-                        ant.unzip(src:"${root}/data/resources/sources/${instance.resource.uri}/base/web.zip", dest:"${webFolder}/", overwrite:true)
-                        process.completedTasks.outputs.each { outputs ->
-                            outputs.each { output ->
-                                ant.sequential {
-                                    ant.copy(file: output.path, tofile: "${webFolder}/Assets/Resources/${output.definition.name}", failonerror: false)
-                                }
+                        ant.sequential {
+                            chmod(perm: "+x", file: scriptBuildWeb)
+                            exec(executable: scriptBuildWeb) {
+                                arg(value: root)
+                                arg(value: resourceURI)
+                                arg(value: instance.processId)
                             }
                         }
 
                         log.debug "Finished exporting Unity Web project"
+
                         break
                     default /* HTML */ :
                         def jsonPathWeb = "${root}/published/${instance.processId}/web"
@@ -322,6 +372,7 @@ class ExportedResourceController {
                         instance.save flush: true
 
                         log.debug "Finished exporting HTML Web project"
+
                         break
                 }
             }
@@ -411,7 +462,7 @@ class ExportedResourceController {
         model.myGroups = Group.findAllByOwner(user)
         model.groupsIAdmin = UserGroup.findAllByUserAndAdmin(user,true).group
 
-        
+
 
         def threshold = 12
         params.order = "desc"

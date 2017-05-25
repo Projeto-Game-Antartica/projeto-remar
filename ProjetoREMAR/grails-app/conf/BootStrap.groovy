@@ -14,10 +14,11 @@ class BootStrap {
 
     def init = { servletContext ->
 
-        MongoHelper.instance.init([username: grailsApplication.config.dataSource.username,
+        MongoHelper.instance.init([dbHost: grailsApplication.config.dataSource.dbHost,
+                                   username: grailsApplication.config.dataSource.username,
                                    password: grailsApplication.config.dataSource.password])
 
-        Propeller.instance.init([dbName  : 'remar-propeller', wipeDb: false,
+        Propeller.instance.init([dbHost: grailsApplication.config.dataSource.dbHost, dbName  : 'remar-propeller', wipeDb: false,
                                  username: grailsApplication.config.dataSource.username,
                                  authDb  : 'admin',
                                  password: grailsApplication.config.dataSource.password])
@@ -45,8 +46,28 @@ class BootStrap {
 
             admin.save flush: true
 
+
+
+//            log.debug "Users: ok"
+
+
+//            criando um novo usuário
+            def usuario = new User(
+                    username: "gustavo",
+                    password: "160870",
+                    email: "loa22@sead.ufscar.br",
+                    firstName: "Gustavo",
+                    lastName: "Braghim",
+                    enabled: true
+            )
+
+            usuario.save flush: true
+
+ println usuario.errors;
+
             UserRole.create admin, Role.findByAuthority("ROLE_ADMIN"), true
             UserRole.create admin, Role.findByAuthority("ROLE_DEV"), true
+
 
             log.debug "Users: ok"
         }
