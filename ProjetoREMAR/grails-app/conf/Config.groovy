@@ -4,7 +4,7 @@ import org.apache.log4j.DailyRollingFileAppender
 
 import java.util.concurrent.TimeUnit
 
-grails.config.locations = ["classpath:env.properties","classpath:env-dspace.properties", SAMLSecurityConfig]
+grails.config.locations = ["classpath:env.properties","classpath:env-dspace.properties", SamlSecurityConfig]
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 
@@ -164,6 +164,35 @@ environments {
     }
 }
 
+
+grails {
+    plugin {
+        springsecurity {
+            userLookup {
+                userDomainClassName = 'br.ufscar.sead.loa.remar.User'
+                usernamePropertyName = 'username'
+                enabledPropertyName = 'enabled'
+                passwordPropertyName = 'password'
+                authoritiesPropertyName = 'roles'
+                authorityJoinClassName = 'br.ufscar.sead.loa.remar.UserRole'
+            }
+
+            authority {
+                className = 'br.ufscar.sead.loa.remar.Role'
+                nameField = 'authority'
+            }
+        }
+    }
+}
+
+
+grails.plugin.springsecurity.providerNames = [
+        'samlAuthenticationProvider',
+        'daoAuthenticationProvider',
+        'anonymousAuthenticationProvider',
+        'rememberMeAuthenticationProvider']
+
+
 grails.plugin.springsecurity.securityConfigType = SecurityConfigType.Requestmap
 grails.plugin.springsecurity.requestMap.className = 'br.ufscar.sead.loa.remar.RequestMap'
 
@@ -181,3 +210,5 @@ grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, cont
 }
 
 grails.web.url.converter = 'hyphenated'
+
+grails.plugin.springsecurity.logout.postOnly = false

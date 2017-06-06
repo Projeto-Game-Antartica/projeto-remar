@@ -49,7 +49,7 @@
                     </div>
                 <!-- END IDP SELECTION SAML-->
 
-                <form action="/j_spring_security_check" method="POST">
+                <form action="${postUrl}" method="POST">
                     <g:if test="${flash.message}">
                     <div class="input-field" id="input-login-error">
                         <i class="material-icons small red-text">error</i><span class="align-with-icon-small red-text">

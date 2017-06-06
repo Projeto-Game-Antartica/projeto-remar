@@ -6,6 +6,8 @@ import br.ufscar.sead.loa.remar.UserRole
 import br.ufscar.sead.loa.remar.User
 import br.ufscar.sead.loa.remar.MongoHelper
 import br.ufscar.sead.loa.remar.Category
+import grails.plugin.springsecurity.SecurityFilterPosition
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.servlet.http.HttpServletRequest
 
@@ -13,6 +15,12 @@ class BootStrap {
     def grailsApplication
 
     def init = { servletContext ->
+        SpringSecurityUtils.clientRegisterFilter 'samlEntryPoint', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 1
+		SpringSecurityUtils.clientRegisterFilter 'metadataFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 2
+        SpringSecurityUtils.clientRegisterFilter 'samlProcessingFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 3
+        SpringSecurityUtils.clientRegisterFilter 'samlLogoutFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 4
+        SpringSecurityUtils.clientRegisterFilter 'samlLogoutProcessingFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 5
+        SpringSecurityUtils.clientRegisterFilter 'samlIDPDiscovery', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 6
 
         MongoHelper.instance.init([dbHost: grailsApplication.config.dataSource.dbHost,
                                    username: grailsApplication.config.dataSource.username,
@@ -96,13 +104,13 @@ class BootStrap {
         }
 
         RequestMap.findOrSaveByUrlAndConfigAttribute('/frame/**', 'IS_AUTHENTICATED_FULLY')
-
+        RequestMap.findOrSaveByUrlAndConfigAttribute('/saml/**', 'IS_AUTHENTICATED_ANONYMOUSLY')
         for (url in [
                 '/', '/index', '/index/project', '/index/info', '/doc/**', '/assets/**',
                 '/exportedResource/publicGames', '/exported-resource/searchGameByCategoryAndName', '/**/js/**', '/**/css/**',
                 '/**/images/**', '/**/favicon.ico', '/data/**', '/**/scss/**', '/**/less/**', '/**/fonts/**',
                 '/**/font/**', '/password/**', '/moodle/**', '/exportedGame/**', '/static/**', '/login/**',
-                '/logout/**', '/signup/**', '/user/**', '/facebook/**', '/published/**', '/group/isLogged', '/saml/login'
+                '/logout/**', '/signup/**', '/user/**', '/facebook/**', '/published/**', '/group/isLogged'
         ]) {
             RequestMap.findOrSaveByUrlAndConfigAttribute(url, 'permitAll')
         }

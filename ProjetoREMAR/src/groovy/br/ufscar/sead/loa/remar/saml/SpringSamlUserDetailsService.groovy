@@ -10,8 +10,15 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.saml.SAMLCredential
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService
-import org.springframework.dao.DataAccessException
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.transaction.Transactional
+import br.ufscar.sead.loa.remar.User
+import grails.plugin.springsecurity.userdetails.NoStackUsernameNotFoundException
+import grails.plugin.springsecurity.userdetails.GrailsUser
+
 
 /**
  * A {@link GormUserDetailsService} extension to read attributes from a LDAP-backed
@@ -32,6 +39,34 @@ class SpringSamlUserDetailsService extends GormUserDetailsService implements SAM
     Map samlUserGroupToRoleMapping
     String samlUserGroupAttribute
     String userDomainClassName
+
+
+    static final List NO_ROLES = [new SimpleGrantedAuthority(SpringSecurityUtils.NO_ROLE)]
+
+    UserDetails loadUserByUsername(String username, boolean loadRoles)
+            throws UsernameNotFoundException {
+        return loadUserByUsername(username)
+    }
+    @Transactional(readOnly=true, noRollbackFor=[IllegalArgumentException, UsernameNotFoundException])
+    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        User user = User.findByUsernameOrEmail(username, username) // The second argument is the e-mail
+        if (!user) throw new NoStackUsernameNotFoundException()
+
+        def roles = user.authorities
+
+        // or if you are using role groups:
+        // def roles = user.authorities.collect { it.authorities }.flatten().unique()
+
+        def authorities = roles.collect {
+            new SimpleGrantedAuthority(it.authority)
+        }
+
+        return new GrailsUser(user.username, user.password, user.enabled, !user.accountExpired,
+                !user.passwordExpired, !user.accountLocked,
+                authorities ?: NO_ROLES, user.id)
+    }
+
 
     public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
 

@@ -30,7 +30,8 @@ import org.springframework.security.saml.processor.HTTPPAOS11Binding
 import org.springframework.security.saml.processor.SAMLProcessorImpl
 import org.springframework.security.saml.metadata.ExtendedMetadata
 import org.springframework.security.saml.metadata.ExtendedMetadataDelegate
-
+import org.springframework.security.saml.metadata.MetadataDisplayFilter
+import org.springframework.security.saml.metadata.MetadataGenerator
 import org.springframework.security.saml.metadata.CachingMetadataManager
 import org.springframework.security.saml.log.SAMLDefaultLogger
 import org.springframework.security.saml.key.JKSKeyManager
@@ -95,12 +96,12 @@ beans = {
         includeScoping = false
     }
 
-//	metadataFilter(MetadataDisplayFilter) {
-//		println "metadataFilter process url: ${conf.saml.metadata.url }"
-//		filterProcessesUrl = conf.saml.metadata.url 		    //'/saml/metadata'
-//	}
-//	
-//	metadataGenerator(MetadataGenerator)
+	metadataFilter(MetadataDisplayFilter) {
+		println "metadataFilter process url: ${conf.saml.metadata.url }"
+		filterProcessesUrl = conf.saml.metadata.url 		    //'/saml/metadata'
+	}
+
+	metadataGenerator(MetadataGenerator)
 
     log.debug "Defining the default idp metadata provider... "
     def idpResource
