@@ -15,7 +15,7 @@ services:
     env_file:
       - .env
     image: tutum/mongodb:3.2
-    volumes: 
+    volumes:
       - 'mongo-data:/data/db'
   remar:
       image: lucasaciole/projeto-remar
@@ -24,16 +24,17 @@ services:
       restart: always
       ports:
         - '80:8080'
-        - '8443:8443'
+        - '443:8443'
       volumes:
           - '~/volume_docker_remar:/usr/local/tomcat/webapps'
-          - './.keystore:/.keystore'
+          - './keystore.pfx:/keystore.pfx'
           - './server.xml:/usr/local/tomcat/conf/server.xml'
           - '~/electron_docker:/root/.electron'
       links:
         - mongodb
         - mysql
       tty: true
+
 volumes:
   mongo-data:
     driver: convoy
