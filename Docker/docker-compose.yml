@@ -27,7 +27,7 @@ services:
         - '443:8443'
       volumes:
           - '~/volume_docker_remar:/usr/local/tomcat/webapps'
-          - './keystore.pfx:/keystore.pfx'
+          - './conf:/conf'
           - './server.xml:/usr/local/tomcat/conf/server.xml'
           - './web.xml:/usr/local/tomcat/conf/web.xml'
           - '~/electron_docker:/root/.electron'
