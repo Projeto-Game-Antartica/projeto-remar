@@ -26,7 +26,7 @@ services:
         - '80:8080'
         - '443:8443'
       volumes:
-          - '~/volume_docker_remar:/usr/local/tomcat/webapps'
+          - '/srv/webapps:/usr/local/tomcat/webapps'
           - './conf:/conf'
           - './server.xml:/usr/local/tomcat/conf/server.xml'
           - './web.xml:/usr/local/tomcat/conf/web.xml'
