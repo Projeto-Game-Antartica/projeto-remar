@@ -2,9 +2,9 @@ package br.ufscar.sead.loa.santograu.remar
 
 class FaseBiblioteca {
 
-    String[] palavra1 = newString[4]
-    String[] palavra2 = newString[4]
-    String[] palavra3 = newString[4]
+    String[] palavra1 = new String[4]
+    String[] palavra2 = new String[4]
+    String[] palavra3 = new String[4]
 
     long ownerId
     String taskId
