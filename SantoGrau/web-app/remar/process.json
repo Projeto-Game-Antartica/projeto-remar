@@ -29,6 +29,29 @@
         }
       ]
     },
+
+
+
+    {
+      "name": "Fase Biblioteca",
+      "uri": "faseBiblioteca",
+      "optional": true,
+      "description": "Criar/editar/selecionar um banco de questões para o nivel Biblioteca.",
+      "type": "media_list",
+      "dependencies": null,
+      "outputs": [
+
+        {
+          "name": "biblioteca.json",
+          "type": "json",
+          "path": "",
+          "shareable": false
+        }
+      ]
+    },
+
+
+
     {
       "name": "Fase Galeria",
       "uri": "faseGaleria",
