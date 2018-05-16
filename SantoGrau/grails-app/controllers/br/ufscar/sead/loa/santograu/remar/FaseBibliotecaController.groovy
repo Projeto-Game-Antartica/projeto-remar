@@ -137,40 +137,35 @@ class FaseBibliotecaController {
 
     @Secured(['permitAll'])
     def exportLevel(){
+
         //cria a instancia da fase tecnologia com os valores digitados pelo usuario
         FaseBiblioteca faseBiblioteca = new FaseBiblioteca()
-        faseBiblioteca.palavra1[0]= params.palavra1dica1
-        faseBiblioteca.palavra1[1]= params.palavra1dica2
-        faseBiblioteca.palavra1[2]= params.palavra1dica3
-        faseBiblioteca.palavra1[3]= params.palavra1
-        faseBiblioteca.palavra2[0]= params.palavra2dica1
-        faseBiblioteca.palavra2[1]= params.palavra2dica2
-        faseBiblioteca.palavra2[2]= params.palavra2dica3
-        faseBiblioteca.palavra2[3]= params.palavra2
-        faseBiblioteca.palavra3[0]= params.palavra3dica1
-        faseBiblioteca.palavra3[1]= params.palavra3dica2
-        faseBiblioteca.palavra3[2]= params.palavra3dica3
-        faseBiblioteca.palavra3[3]= params.palavra3
+        faseBiblioteca.palavra1[0] = params.palavra1dica1
+        faseBiblioteca.palavra1[1] = params.palavra1dica2
+        faseBiblioteca.palavra1[2] = params.palavra1dica3
+        faseBiblioteca.palavra1[3] = params.palavra1
+        faseBiblioteca.palavra2[0] = params.palavra2dica1
+        faseBiblioteca.palavra2[1] = params.palavra2dica2
+        faseBiblioteca.palavra2[2] = params.palavra2dica3
+        faseBiblioteca.palavra2[3] = params.palavra2
+        faseBiblioteca.palavra3[0] = params.palavra3dica1
+        faseBiblioteca.palavra3[1] = params.palavra3dica2
+        faseBiblioteca.palavra3[2] = params.palavra3dica3
+        faseBiblioteca.palavra3[3] = params.palavra3
 
-        //cria os arquivos json e html da fase
+        //cria o arquivo json da fase
         createJsonFile("biblioteca.json", faseBiblioteca)
 
         // Finds the created file path
-        def ids = []
         def folder = servletContext.getRealPath("/data/${springSecurityService.currentUser.id}/${session.taskId}")
-        def fasesFolder = servletContext.getRealPath("/data/${springSecurityService.currentUser.id}/processes/${session.processId}")
-
-        log.debug folder
-        ids << MongoHelper.putFile(fasesFolder + '/fases.json')
-        ids << MongoHelper.putFile(folder + '/computadores.json')
+        def id = MongoHelper.putFile("${folder}/biblioteca.json")
 
         def port = request.serverPort
         if (Environment.current == Environment.DEVELOPMENT) {
             port = 8080
         }
         // Updates current task to 'completed' status
-        render  "http://${request.serverName}:${port}/process/task/complete/${session.taskId}" +
-                "?files=${ids[0]}&files=${ids[1]}&files=${ids[2]}"
+        render  "http://${request.serverName}:${port}/process/task/complete/${session.taskId}?files=${id}"
 
     }
 
@@ -184,21 +179,28 @@ class FaseBibliotecaController {
         def pw = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), "UTF-8"))
         pw.write("{\n");
-        pw.write("\t\"words\": [\"" +
-                faseBiblioteca.palavra1[0].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra1[1].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra1[2].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra1[3].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra2[0].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra2[1].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra2[2].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra2[1].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra3[0].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra3[1].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra3[2].replace("\"","\\\"") +"\", \""+
-                faseBiblioteca.palavra3[3].replace("\"","\\\"") +"\"]\n")
-        pw.write("}");
-        pw.close();
+        pw.write("\t\"dicas1\": [\""
+                + faseBiblioteca.palavra1[0].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra1[1].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra1[2].replace("\"","\\\"") + "\""
+                + "],\n"
+                + "\t\"dicas2\": [\""
+                + faseBiblioteca.palavra2[0].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra2[1].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra2[2].replace("\"","\\\"") + "\""
+                + "],\n"
+                + "\t\"dicas3\": [\""
+                + faseBiblioteca.palavra3[0].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra3[1].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra3[2].replace("\"","\\\"") + "\""
+                + "],\n"
+                + "\t\"respostas\": [\""
+                + faseBiblioteca.palavra1[3].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra2[3].replace("\"","\\\"") + "\", \""
+                + faseBiblioteca.palavra3[3].replace("\"","\\\"") + "\""
+                + "]\n")
+        pw.write("}")
+        pw.close()
     }
 
 }
