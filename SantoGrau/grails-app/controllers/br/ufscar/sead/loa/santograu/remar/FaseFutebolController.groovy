@@ -1,0 +1,198 @@
+package br.ufscar.sead.loa.santograu.remar
+
+import br.ufscar.sead.loa.remar.api.MongoHelper
+import grails.plugin.springsecurity.annotation.Secured
+import grails.transaction.Transactional
+import grails.util.Environment
+
+/*import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.NO_CONTENT
+import static org.springframework.http.HttpStatus.OK*/
+import org.springframework.web.multipart.MultipartFile
+import static org.springframework.http.HttpStatus.*
+
+@Secured(["isAuthenticated()"])
+class FaseFutebolController {
+
+    def springSecurityService
+
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    def beforeInterceptor = [action: this.&check, only: ['index', 'exportQuestions','save', 'update', 'delete']]
+
+    private check() {
+        if (springSecurityService.isLoggedIn())
+            session.user = springSecurityService.currentUser
+        else {
+            log.debug("Logout: session.user is NULL !")
+            session.user = null
+            redirect controller: "login", action: "index"
+            return false
+        }
+    }
+
+    @Secured(['permitAll'])
+    def index(Integer max) {
+        if (params.t) {
+            session.taskId = params.t
+        }
+        session.user = springSecurityService.currentUser
+        def list = FaseFutebol.findAllByOwnerId(session.user.id)
+        if (list.size() == 0) {
+            new FaseFutebol(title: "Desafio1", correctAnswer: "a", ownerId: session.user.id, taskId: session.taskId).save flush: true
+            new FaseFutebol(title: "Desafio2", correctAnswer: "b", ownerId: session.user.id, taskId: session.taskId).save flush: true
+            list = FaseFutebol.findAllByOwnerId(session.user.id)
+        }
+        respond list, model: [faseFutebolInstanceCount: list.size(), faseFutebolInstanceList: list]
+    }
+
+    def show(FaseFutebol faseFutebolInstance) {
+        respond faseFutebolInstance
+    }
+
+    def create() {
+        respond new FaseFutebol(params)
+    }
+
+    @Transactional
+    def save(FaseFutebol faseFutebolInstance) {
+        if (faseFutebolInstance == null) {
+            notFound()
+            return
+        }
+
+        faseFutebolInstance.title = params.title
+        faseFutebolInstance.correctAnswer = params.correctAnswer
+        faseFutebolInstance.ownerId = params.ownerId
+        faseFutebolInstance.taskId = params.taskId
+
+        if (faseFutebolInstance.hasErrors()) {
+            respond faseFutebolInstance.errors, view: 'create'
+            return
+        }
+
+        faseFutebolInstance.save flush: true
+
+        /*request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.created.message', args: [message(code: 'faseFutebol.label', default: 'FaseFutebol'), faseFutebolInstance.id])
+                redirect faseFutebolInstance
+            }
+            '*' { respond faseFutebolInstance, [status: CREATED] }*/
+    }
+
+
+    def edit(FaseFutebol faseFutebolInstance) {
+        respond faseFutebolInstance
+    }
+
+    @Transactional
+    def update(FaseFutebol faseFutebolInstance) {
+        if (faseFutebolInstance == null) {
+            notFound()
+            return
+        }
+
+        faseFutebolInstance.title = params.title
+        faseFutebolInstance.correctAnswer = params.correctAnswer
+        faseFutebolInstance.ownerId = session.user.id as long
+        faseFutebolInstance.taskId = session.taskId as String
+
+        if (faseFutebolInstance.hasErrors()) {
+            respond faseFutebolInstance.errors, view: 'edit'
+            return
+        }
+
+        faseFutebolInstance.save flush: true
+
+        /*request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'FaseFutebol.label', default: 'FaseFutebol'), faseFutebolInstance.id])
+                redirect faseFutebolInstance
+            }
+            '*' { respond faseFutebolInstance, [status: OK] }
+        }*/
+    }
+
+    @Transactional
+    def delete(FaseFutebol faseFutebolInstance) {
+
+        if (faseFutebolInstance == null) {
+            notFound()
+            return
+        }
+
+        faseFutebolInstance.delete flush: true
+        render 'delete ok'
+
+        /*request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'FaseFutebol.label', default: 'FaseFutebol'), faseFutebolInstance.id])
+                redirect action: "index", method: "GET"
+            }
+            '*' { render status: NO_CONTENT }
+        }*/
+    }
+
+    protected void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'faseFutebol.label', default: 'FaseFutebol'), params.id])
+                redirect action: "index", method: "GET"
+            }
+            '*' { render status: NOT_FOUND }
+        }
+    }
+
+    @Secured(['permitAll'])
+    def returnInstance(FaseFutebol faseFutebolInstance) {
+        if (faseFutebolInstance == null) {
+            //notFound()
+            render "null"
+        } else {
+            render faseFutebolInstance.title + "%@!" +
+                    faseFutebolInstance.correctAnswer + "%@!" +
+                    faseFutebolInstance.id
+        }
+    }
+
+    /*@Secured(['permitAll'])
+    def exportQuestions(){
+        //popula a lista de questoes a partir do ID de cada uma
+        ArrayList<Integer> list_questionId = new ArrayList<Integer>() ;
+        ArrayList<QuestionFaseCampoMinado> questionList = new ArrayList<QuestionFaseCampoMinado>();
+        list_questionId.addAll(params.list_id);
+        for (int i=0; i<list_questionId.size();i++)
+            questionList.add(QuestionFaseCampoMinado.findById(list_questionId[i]));
+
+        //cria o arquivo json
+        createJsonFile("questoescm.json", questionList)
+
+        // Finds the created file path
+        def folder = servletContext.getRealPath("/data/${springSecurityService.currentUser.id}/${session.taskId}")
+        String id = MongoHelper.putFile("${folder}/questoescm.json")
+
+
+        def port = request.serverPort
+        if (Environment.current == Environment.DEVELOPMENT) {
+            port = 8080
+        }
+
+        // Updates current task to 'completed' status
+        render  "http://${request.serverName}:${port}/process/task/complete/${session.taskId}?files=${id}"
+    }*/
+
+    void createJsonFile(String fileName, FaseFutebol d1, FaseFutebol d2){
+        def dataPath = servletContext.getRealPath("/data")
+        def instancePath = new File("${dataPath}/${springSecurityService.currentUser.id}/${session.taskId}")
+        instancePath.mkdirs()
+
+        File file = new File("$instancePath/"+fileName);
+        def pw = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))
+        pw.write("{\n")
+        pw.write("\t\"desafio1\": [\"" + d1.title + "\",\""+d1.correctAnswer+"\"],\n")
+        pw.write("\t\"desafio1\": [\"" + d2.title + "\",\""+d2.correctAnswer+"\"],\n")
+        pw.write("}");
+        pw.close();
+    }
+}

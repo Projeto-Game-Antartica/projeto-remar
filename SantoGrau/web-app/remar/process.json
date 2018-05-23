@@ -29,15 +29,28 @@
         }
       ]
     },
-
-
-
+    {
+      "name": "Fase Futebol",
+      "uri": "faseFutebol",
+      "optional": true,
+      "description": "Criar/editar/selecionar um banco de questões para o nivel Futebol.",
+      "type": "text_database",
+      "dependencies": null,
+      "outputs": [
+        {
+          "name": "campo.json",
+          "type": "json",
+          "path": "",
+          "shareable": false
+        }
+      ]
+    },
     {
       "name": "Fase Biblioteca",
       "uri": "faseBiblioteca",
       "optional": true,
-      "description": "Criar/editar/selecionar um banco de questões para o nivel Biblioteca.",
-      "type": "media_list",
+      "description": "Criar/editar/selecionar duas palavras chave a serem adivinhadas e três dicas para cada uma para o nivel Biblioteca.",
+      "type": "text_database",
       "dependencies": null,
       "outputs": [
 
@@ -49,9 +62,6 @@
         }
       ]
     },
-
-
-
     {
       "name": "Fase Galeria",
       "uri": "faseGaleria",
