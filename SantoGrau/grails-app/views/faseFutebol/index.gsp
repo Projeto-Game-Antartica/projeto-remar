@@ -6,6 +6,7 @@
 		<meta name="layout" content="main">
 		<title>Em Busca do Santo Grau</title>
 		<g:external dir="css" file="faseFutebol.css" />
+		<g:javascript src="iframeResizer.contentWindow.min.js"/>
 		<script type="text/javascript" src="/santograu/js/faseFutebol.js"></script>
 	</head>
 
