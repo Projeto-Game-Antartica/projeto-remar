@@ -1,24 +1,33 @@
 <%@ page import="br.ufscar.sead.loa.santograu.remar.FaseFutebol" %>
-<!DOCTYPE html>
-<html>
+	<!DOCTYPE html>
+	<html>
 
 	<head>
 		<meta name="layout" content="main">
 		<title>Em Busca do Santo Grau</title>
-		<g:external dir="css" file="faseFutebol.css" />
-		<g:javascript src="iframeResizer.contentWindow.min.js"/>
+		<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="/santograu/js/faseFutebol.js"></script>
+		<g:external dir="css" file="faseFutebol.css" />
+		<g:javascript src="iframeResizer.contentWindow.min.js" />
 	</head>
 
 	<body>
 		<div class="cluster-header">
-			<p class="text-teal text-darken-3 left-align margin-bottom" style="font-size: 28px;">Fase Campo de Futebol - Banco de Questões</p>
+			<p class="text-teal text-darken-3 left-align margin-bottom" style="font-size: 28px;">
+				Fase Campo de Futebol - Banco de Questões
+			</p>
 		</div>
 		<div class="row">
-			<div style="margin-bottom:10px;color:#333333">
-				Coloque aqui descrição do jogo + tutorial.
-				<div style="margin-top:20px;margin-bottom:15px;text-align:center">Colocar imagem do readme</div>
-				Selecione 2 desafios.
+			<div style=" margin-bottom: 10px; color:#333333">
+				Explicação da fase + link pro tutorial
+				<center>
+					<div style="margin-top:20px;margin-bottom:10px">
+						Imagem do jogo
+					</div>
+				</center>
+				Selecione 2 perguntas.
 			</div>
 			<div id="chooseQuestion" class="col s12 m12 l12">
 				<br>
@@ -51,7 +60,18 @@
 							</thead>
 
 							<tbody>
-
+								<g:each in="${faseFutebolInstanceList}" status="i" var="faseFutebolInstance">
+									<tr id="tr${faseFutebolInstance.id}" class="selectable_tr" style="cursor: pointer;" data-id="${fieldValue(bean: faseFutebolInstance, field: "id")}" data-owner-id="${fieldValue(bean: faseFutebolInstance, field: "ownerId")}" data-checked="false">
+										<td class="_not_editable">
+											<input style="background-color: #727272" id="checkbox-${faseFutebolInstance.id}" class="filled-in" type="checkbox">
+											<label for="checkbox-${faseFutebolInstance.id}"></label>
+										</td>
+										<td>${fieldValue(bean: faseFutebolInstance, field: "title")}</td>
+										<td>${fieldValue(bean: faseFutebolInstance, field: "correctAnswer")}</td>
+										<td> <i style="color: #7d8fff !important; margin-right:10px;" class="fa fa-pencil " onclick="_modal_edit($(this.closest('tr')))"></i>
+										</td>
+									</tr>
+								</g:each>
 							</tbody>
 						</table>
 					</div>
@@ -66,11 +86,11 @@
 					</div>
 					<div class="col s1 offset-s1 m1 l1">
 						<a data-target="uploadModal" class="btn-floating btn-large waves-effect waves-light my-orange modal-trigger tooltipped" data-tooltip="Upload arquivo .csv"><i
-							class="material-icons">file_upload</i></a>
+								class="material-icons">file_upload</i></a>
 					</div>
 					<div class="col s1 offset-s1 m1 l1">
 						<a class="btn-floating btn-large waves-effect waves-light my-orange tooltipped" data-tooltip="Exportar questões para .csv"><i
-							class="material-icons" onclick="exportQuestions()">file_download</i></a>
+								class="material-icons" onclick="exportQuestions()">file_download</i></a>
 					</div>
 				</div>
 
@@ -94,11 +114,11 @@
 
 								<div class="row">
 									<div class="input-field col s9">
-										<label id="correctAnswerLabel" class="active" for="correctAnswerID">Resposta</label>
-										<input type="text" class="form-control" id="correctAnswerID" name="correctAnswer" required="" maxlength="40" length="20" />
+										<label id="labelCorrectAnswer" class="active" for="correctAnswer">Resposta</label>
+										<input class="validate" id="correctAnswer" name="correctAnswer" required="" maxlength="15" type="text" length="15" />
 									</div>
 								</div>
-								<input type="hidden" id="faseFutebolMinadoID" name="faseFutebolID">
+								<input type="hidden" id="faseFutebolID" name="faseFutebolID">
 								<div class="col l10">
 									<g:submitButton name="update" class="btn btn-success btn-lg my-orange" value="Salvar" />
 								</div>
@@ -118,137 +138,135 @@
 										<input id="editTitleCreate" name="title" required="" type="text" class="validate" length="95" maxlength="95">
 									</div>
 								</div>
-
 								<div class="row">
-									<div class="row">
-										<div class="input-field col s9">
-											<label id="labelAnswerCreate" class="active" for="editAnswerCreate">Resposta</label>
-											<input type="text" class="form-control" id="editAnswerCreate" name="correctAnswer" required="" maxlength="40" length="15" />
-										</div>
+									<div class="input-field col s9">
+										<label id="labelCorrectAnswer" class="active" for="editCorrectAnswerCreate">Resposta</label>
+										<input type="text" class="validate" id="editCorrectAnswerCreate" name="answers1" required="" maxlength="15" length="15" />
 									</div>
-									<div class="col l10">
-										<g:submitButton name="create" class="btn btn-success btn-lg my-orange" value="Criar" />
-									</div>
+								</div>
+								<div class="col l10">
+									<g:submitButton name="create" class="btn btn-success btn-lg my-orange" value="Criar" />
+								</div>
 							</g:form>
-							</div>
 						</div>
 					</div>
+				</div>
 
-					<div id="deleteModal" class="modal">
-						<div class="modal-content">
-							<div id="delete-one-question">
-								Você tem certeza que deseja excluir essa questão?
-							</div>
-							<div id="delete-several-questions">
-								Você tem certeza que deseja excluir essas questões?
-							</div>
+				<div id="deleteModal" class="modal">
+					<div class="modal-content">
+						<div id="delete-one-question">
+							Você tem certeza que deseja excluir essa questão?
 						</div>
-						<div class="modal-footer">
-							<button class="btn waves-effect waves-light modal-close my-orange" onclick="_delete()" style="margin-right: 10px;">Sim</button>
-							<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Não</button>
+						<div id="delete-several-questions">
+							Você tem certeza que deseja excluir essas questões?
 						</div>
 					</div>
-
-					<div id="erroDeleteModal" class="modal">
-						<div class="modal-content">
-							Você deve selecionar ao menos uma questão para excluir.
-						</div>
-						<div class="modal-footer">
-							<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
-						</div>
+					<div class="modal-footer">
+						<button class="btn waves-effect waves-light modal-close my-orange" onclick="_delete()" style="margin-right: 10px;">Sim</button>
+						<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Não</button>
 					</div>
+				</div>
 
-					<div id="errorSaveModal" class="modal">
-						<div class="modal-content">
-							Você deve selecionar 2 desafios.
-						</div>
-						<div class="modal-footer">
-							<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
-						</div>
+				<div id="erroDeleteModal" class="modal">
+					<div class="modal-content">
+						Você deve selecionar ao menos uma questão para excluir.
 					</div>
-
-
-					<div id="errorDownloadModal" class="modal">
-						<div class="modal-content">
-							Você deve selecionar ao menos uma questão antes de exportar seu banco de questões.
-						</div>
-						<div class="modal-footer">
-							<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
-						</div>
+					<div class="modal-footer">
+						<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
 					</div>
-					<div id="errorImportingQuestionsModal" class="modal">
-						<div class="modal-content">
-							Erro - Para importar questões, você deve deixá-las no formado indicado.
-						</div>
-						<div class="modal-footer">
-							<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
-						</div>
-					</div>
+				</div>
 
-					<div id="uploadModal" class="modal">
-						<div class="modal-content">
-							<h4>Enviar arquivo .csv</h4>
-							<div class="row">
-								<g:uploadForm action="generateQuestions">
-									<div class="file-field input-field">
-										<div class="btn my-orange">
-											<span>File</span>
-											<input type="file" accept="text/csv" id="csv" name="csv">
-										</div>
-										<div class="file-path-wrapper">
-											<input class="file-path validate" type="text">
-										</div>
+				<div id="errorSaveModal" class="modal">
+					<div class="modal-content">
+						Você deve selecionar pelo menos 2 questões para enviar.
+					</div>
+					<div class="modal-footer">
+						<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
+					</div>
+				</div>
+
+				<div id="errorDownloadModal" class="modal">
+					<div class="modal-content">
+						Você deve selecionar ao menos uma questão antes de exportar seu banco de questões.
+					</div>
+					<div class="modal-footer">
+						<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
+					</div>
+				</div>
+				<div id="errorImportingQuestionsModal" class="modal">
+					<div class="modal-content">
+						Erro - Para importar questões, você deve deixá-las no formado indicado.
+					</div>
+					<div class="modal-footer">
+						<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>
+					</div>
+				</div>
+
+				<div id="uploadModal" class="modal">
+					<div class="modal-content">
+						<h4>Enviar arquivo .csv</h4>
+						<div class="row">
+							<g:uploadForm action="generateQuestions">
+								<div class="file-field input-field">
+									<div class="btn my-orange">
+										<span>File</span>
+										<input type="file" accept="text/csv" id="csv" name="csv">
 									</div>
-									<div class="row">
-										<div class="col s1 offset-s10">
-											<g:submitButton class="btn my-orange" name="csv" value="Enviar" />
-										</div>
+									<div class="file-path-wrapper">
+										<input class="file-path validate" type="text">
 									</div>
-								</g:uploadForm>
-							</div>
-
-							<blockquote>Formatação do arquivo .csv</blockquote>
-							<div class="row">
-								<div class="col s12">
-									<ol>
-										<li>O separador do arquivo .csv deve ser <b> ';' (ponto e vírgula)</b> </li>
-										<li>O arquivo deve ser composto apenas por <b>dados</b></li>
-										<li>O arquivo deve representar a estrutura da tabela de exemplo</li>
-									</ol>
-									<ul>
-										<li><a href="/santograu/samples/exemploSantoGrau.csv">Download do arquivo exemplo</a></li>
-									</ul>
 								</div>
-							</div>
-							<div class="row">
-								<div class="col s12">
-									<table class="center" style="font-size: 12px;">
-										<thead>
-											<tr>
-												<th>Pergunta</th>
-												<th>Resposta</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>Pergunta 1</td>
-												<td>Resposta 1</td>
-												<td>1</td>
-											</tr>
-											<tr>
-												<td>Pergunta 2</td>
-												<td>Resposta 2</td>
-												<td>3</td>
-											</tr>
-										</tbody>
-									</table>
+								<div class="row">
+									<div class="col s1 offset-s10">
+										<g:submitButton class="btn my-orange" name="csv" value="Enviar" />
+									</div>
 								</div>
+							</g:uploadForm>
+						</div>
+						<blockquote>Formatação do arquivo .csv</blockquote>
+						<div class="row">
+							<div class="col s12">
+								<ol>
+									<li>O separador do arquivo .csv deve ser <b> ';' (ponto e vírgula)</b> </li>
+									<li>O arquivo deve ser composto apenas por <b>dados</b></li>
+									<li>O arquivo deve representar a estrutura da tabela de exemplo</li>
+								</ol>
+								<ul>
+									<li><a href="/santograu/samples/exemploSantoGrauBlocoGelo.csv">Download do arquivo exemplo</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col s12">
+								<table class="center" style="font-size: 12px;">
+									<thead>
+										<tr>
+											<th>Pergunta</th>
+											<th>Resposta</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Pergunta 1</td>
+											<td>Resposta 1</td>
+										</tr>
+										<tr>
+											<td>Pergunta 2</td>
+											<td>Resposta 2</td>
+										</tr>
+										<tr>
+											<td>Pergunta 3</td>
+											<td>Resposta 3</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<input type="hidden" id="errorImportingQuestions" name="errorImportingQuestions" value="${errorImportQuestions}">
+		</div>
+		<input type="hidden" id="errorImportingQuestions" name="errorImportingQuestions" value="${errorImportQuestions}">
 	</body>
 
-</html>
+	</html>

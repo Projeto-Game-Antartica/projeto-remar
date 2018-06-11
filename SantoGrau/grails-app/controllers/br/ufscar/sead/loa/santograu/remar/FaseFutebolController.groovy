@@ -5,9 +5,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import grails.util.Environment
 
-/*import static org.springframework.http.HttpStatus.NOT_FOUND
-import static org.springframework.http.HttpStatus.NO_CONTENT
-import static org.springframework.http.HttpStatus.OK*/
 import org.springframework.web.multipart.MultipartFile
 import static org.springframework.http.HttpStatus.*
 
@@ -62,7 +59,7 @@ class FaseFutebolController {
 
         faseFutebolInstance.title = params.title
         faseFutebolInstance.correctAnswer = params.correctAnswer
-        faseFutebolInstance.ownerId = params.ownerId
+        faseFutebolInstance.ownerId = session.user.id
         faseFutebolInstance.taskId = params.taskId
 
         if (faseFutebolInstance.hasErrors()) {
@@ -155,31 +152,29 @@ class FaseFutebolController {
         }
     }
 
-    /*@Secured(['permitAll'])
+    @Transactional
     def exportQuestions(){
         //popula a lista de questoes a partir do ID de cada uma
         ArrayList<Integer> list_questionId = new ArrayList<Integer>() ;
-        ArrayList<QuestionFaseCampoMinado> questionList = new ArrayList<QuestionFaseCampoMinado>();
+        ArrayList<FaseFutebol> questionList = new ArrayList<FaseFutebol>();
         list_questionId.addAll(params.list_id);
         for (int i=0; i<list_questionId.size();i++)
-            questionList.add(QuestionFaseCampoMinado.findById(list_questionId[i]));
+            questionList.add(FaseFutebol.findById(list_questionId[i]));
 
         //cria o arquivo json
-        createJsonFile("questoescm.json", questionList)
+        createJsonFile("campo.json", questionList)
 
         // Finds the created file path
         def folder = servletContext.getRealPath("/data/${springSecurityService.currentUser.id}/${session.taskId}")
-        String id = MongoHelper.putFile("${folder}/questoescm.json")
-
+        String id = MongoHelper.putFile("${folder}/campo.json")
 
         def port = request.serverPort
         if (Environment.current == Environment.DEVELOPMENT) {
             port = 8080
         }
-
         // Updates current task to 'completed' status
         render  "http://${request.serverName}:${port}/process/task/complete/${session.taskId}?files=${id}"
-    }*/
+      }
 
     void createJsonFile(String fileName, FaseFutebol d1, FaseFutebol d2){
         def dataPath = servletContext.getRealPath("/data")
