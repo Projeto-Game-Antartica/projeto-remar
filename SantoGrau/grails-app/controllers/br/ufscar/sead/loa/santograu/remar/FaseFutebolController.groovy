@@ -13,7 +13,7 @@ class FaseFutebolController {
 
     def springSecurityService
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "DELETE", returnInstance: "GET"]
     def beforeInterceptor = [action: this.&check, only: ['index', 'exportQuestions','save', 'update', 'delete']]
 
     private check() {
@@ -39,7 +39,7 @@ class FaseFutebolController {
             new FaseFutebol(title: "Desafio2", correctAnswer: "b", ownerId: session.user.id, taskId: session.taskId).save flush: true
             list = FaseFutebol.findAllByOwnerId(session.user.id)
         }
-        respond list, model: [faseFutebolInstanceCount: list.size(), faseFutebolInstanceList: list]
+        respond list, model: [faseFutebolInstanceCount: list.size(), errorImportQuestions:params.errorImportQuestions]
     }
 
     def show(FaseFutebol faseFutebolInstance) {
@@ -52,24 +52,28 @@ class FaseFutebolController {
 
     @Transactional
     def save(FaseFutebol faseFutebolInstance) {
+        
         if (faseFutebolInstance == null) {
             notFound()
             return
         }
 
-        faseFutebolInstance.title = params.title
-        faseFutebolInstance.correctAnswer = params.correctAnswer
-        faseFutebolInstance.ownerId = session.user.id
-        faseFutebolInstance.taskId = params.taskId
+        //faseFutebolInstance.title= params.title
+        faseFutebolInstance.correctAnswer= params.correctAnswer
+        faseFutebolInstance.ownerId = session.user.id as long
+        faseFutebolInstance.taskId = session.taskId as String
+        faseFutebolInstance.save flush:true
 
-        if (faseFutebolInstance.hasErrors()) {
+        redirect(action: "index")
+
+        /*if (faseFutebolInstance.hasErrors()) {
             respond faseFutebolInstance.errors, view: 'create'
             return
         }
 
         faseFutebolInstance.save flush: true
 
-        /*request.withFormat {
+        request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'faseFutebol.label', default: 'FaseFutebol'), faseFutebolInstance.id])
                 redirect faseFutebolInstance
@@ -83,25 +87,27 @@ class FaseFutebolController {
     }
 
     @Transactional
-    def update(FaseFutebol faseFutebolInstance) {
-        if (faseFutebolInstance == null) {
+    def update() {
+        /*if (faseFutebolInstance == null) {
             notFound()
             return
-        }
-
+        }*/
+        FaseFutebol faseFutebolInstance = FaseFutebol.findById(Integer.parseInt(params.faseFutebolID))
         faseFutebolInstance.title = params.title
         faseFutebolInstance.correctAnswer = params.correctAnswer
         faseFutebolInstance.ownerId = session.user.id as long
         faseFutebolInstance.taskId = session.taskId as String
+        faseFutebolInstance.save flush:true
+        redirect action: "index"
 
-        if (faseFutebolInstance.hasErrors()) {
+        /*if (faseFutebolInstance.hasErrors()) {
             respond faseFutebolInstance.errors, view: 'edit'
             return
         }
 
         faseFutebolInstance.save flush: true
 
-        /*request.withFormat {
+        request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'FaseFutebol.label', default: 'FaseFutebol'), faseFutebolInstance.id])
                 redirect faseFutebolInstance
@@ -120,14 +126,6 @@ class FaseFutebolController {
 
         faseFutebolInstance.delete flush: true
         render 'delete ok'
-
-        /*request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'FaseFutebol.label', default: 'FaseFutebol'), faseFutebolInstance.id])
-                redirect action: "index", method: "GET"
-            }
-            '*' { render status: NO_CONTENT }
-        }*/
     }
 
     protected void notFound() {

@@ -6,7 +6,6 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:field name="correctAnswer" type="text" value="${faseFutebolInstance.correctAnswer}" required=""/>
-
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: faseFutebolInstance, field: 'ownerId', 'error')} required">

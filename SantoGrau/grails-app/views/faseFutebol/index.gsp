@@ -141,7 +141,7 @@
 								<div class="row">
 									<div class="input-field col s9">
 										<label id="labelCorrectAnswer" class="active" for="editCorrectAnswerCreate">Resposta</label>
-										<input type="text" class="validate" id="editCorrectAnswerCreate" name="answers1" required="" maxlength="15" length="15" />
+										<input type="text" class="validate" id="editCorrectAnswerCreate" name="correctAnswer" required="" maxlength="15" length="15" />
 									</div>
 								</div>
 								<div class="col l10">

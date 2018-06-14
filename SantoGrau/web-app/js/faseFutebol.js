@@ -61,14 +61,14 @@ function _modal_edit(tr) {
     url: url,
     success: function(returndata) {
       var faseFutebolInstance = returndata.split("%@!");
-      //faseBlocoGeloInstance é um vetor com os atributos da classe QuestionBlocoGelo na seguinte ordem:
+      //faseFutebolInstance é um vetor com os atributos da classe na seguinte ordem:
       // Title - correctAnswer - ID
 
-      $("#editTitle").attr("value", faseBlocoGeloInstance[0]);
+      $("#editTitle").attr("value", faseFutebolInstance[0]);
       $("#labelTitle").attr("class", "active");
       $("#correctAnswerLabel").attr("class", "active");
       $("#correctAnswerID").attr("value", faseFutebolInstance[1]);
-      $("#faseFutebolID").attr("value", faseBlocoGeloInstance[2]);
+      $("#faseFutebolID").attr("value", faseFutebolInstance[2]);
       $("#editModal").openModal();
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
