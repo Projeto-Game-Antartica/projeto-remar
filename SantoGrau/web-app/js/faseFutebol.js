@@ -168,7 +168,7 @@ function _submit() {
   var list_id = [];
 
   //checa se o usuario selecionou exatamente 2 questoes
-  if ($("input[type=checkbox]:checked").size() < 2) {
+  if ($("input[type=checkbox]:checked").size() != 2) {
     $("#errorSaveModal").openModal();
   } else {
     //cria uma lista com os ids de cada questao selecionada

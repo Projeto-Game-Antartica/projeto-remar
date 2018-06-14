@@ -10,6 +10,7 @@
 		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="/santograu/js/faseFutebol.js"></script>
 		<g:external dir="css" file="faseFutebol.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<g:javascript src="iframeResizer.contentWindow.min.js" />
 	</head>
 
@@ -53,9 +54,7 @@
 									<th>Resposta
 										<div class="row" style="margin-bottom: -10px;"><button class="btn-floating" style="visibility: hidden"></button></div>
 									</th>
-									<th>Ações
-										<div class="row" style="margin-bottom: -10px;"><button class="btn-floating" style="visibility: hidden"></button></div>
-									</th>
+									<th>Ações <div class="row" style="margin-bottom: -10px;"><button  class="btn-floating" style="visibility: hidden"></button></div></th>
 								</tr>
 							</thead>
 
@@ -68,7 +67,7 @@
 										</td>
 										<td>${fieldValue(bean: faseFutebolInstance, field: "title")}</td>
 										<td>${fieldValue(bean: faseFutebolInstance, field: "correctAnswer")}</td>
-										<td> <i style="color: #7d8fff !important; margin-right:10px;" class="fa fa-pencil " onclick="_modal_edit($(this.closest('tr')))"></i>
+										<td> <i style="color: #7d8fff !important; margin-right:10px;" class="fa fa-pencil " onclick="_modal_edit($(this.closest('tr')))" ></i>
 										</td>
 									</tr>
 								</g:each>
@@ -141,7 +140,7 @@
 								<div class="row">
 									<div class="input-field col s9">
 										<label id="labelCorrectAnswer" class="active" for="editCorrectAnswerCreate">Resposta</label>
-										<input type="text" class="validate" id="editCorrectAnswerCreate" name="correctAnswer" required="" maxlength="15" length="15" />
+										<input type="text" class="validate" id="editCorrectAnswerCreate" name="correctAnswer" required="" maxlength="15" length="95" /><!--length=95-->
 									</div>
 								</div>
 								<div class="col l10">
@@ -178,7 +177,7 @@
 
 				<div id="errorSaveModal" class="modal">
 					<div class="modal-content">
-						Você deve selecionar pelo menos 2 questões para enviar.
+						Você deve selecionar duas questões para enviar.
 					</div>
 					<div class="modal-footer">
 						<button class="btn waves-effect waves-light modal-close my-orange" style="margin-right: 10px;">Ok</button>

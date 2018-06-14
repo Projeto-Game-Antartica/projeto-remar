@@ -52,7 +52,7 @@ class FaseFutebolController {
 
     @Transactional
     def save(FaseFutebol faseFutebolInstance) {
-        
+
         if (faseFutebolInstance == null) {
             notFound()
             return
@@ -174,7 +174,7 @@ class FaseFutebolController {
         render  "http://${request.serverName}:${port}/process/task/complete/${session.taskId}?files=${id}"
       }
 
-    void createJsonFile(String fileName, FaseFutebol d1, FaseFutebol d2){
+    void createJsonFile(String fileName, questionList){
         def dataPath = servletContext.getRealPath("/data")
         def instancePath = new File("${dataPath}/${springSecurityService.currentUser.id}/${session.taskId}")
         instancePath.mkdirs()
@@ -183,8 +183,8 @@ class FaseFutebolController {
         def pw = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), "UTF-8"))
         pw.write("{\n")
-        pw.write("\t\"desafio1\": [\"" + d1.title + "\",\""+d1.correctAnswer+"\"],\n")
-        pw.write("\t\"desafio1\": [\"" + d2.title + "\",\""+d2.correctAnswer+"\"],\n")
+        pw.write("\t\"desafio1\": [\"" + questionList[0].title + "\",\""+questionList[0].correctAnswer+"\"],\n")
+        pw.write("\t\"desafio1\": [\"" + questionList[1].title + "\",\""+questionList[1].correctAnswer+"\"],\n")
         pw.write("}");
         pw.close();
     }
