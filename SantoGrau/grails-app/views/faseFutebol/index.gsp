@@ -5,9 +5,9 @@
 	<head>
 		<meta name="layout" content="main">
 		<title>Em Busca do Santo Grau</title>
-		<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script-->
+		<!--script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script-->
 		<script type="text/javascript" src="/santograu/js/faseFutebol.js"></script>
 		<g:external dir="css" file="faseFutebol.css" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -67,8 +67,8 @@
 										</td>
 										<td>${fieldValue(bean: faseFutebolInstance, field: "title")}</td>
 										<td>${fieldValue(bean: faseFutebolInstance, field: "correctAnswer")}</td>
-										<td> <i style="color: #7d8fff !important; margin-right:10px;" class="fa fa-pencil " onclick="_modal_edit($(this.closest('tr')))" ></i>
-										</td>
+										<!--td> <i style="color: #7d8fff !important; margin-right:10px;" class="fa fa-pencil " onclick="_modal_edit($(this.closest('tr')))" >pencil</i></td-->
+										<td><i style="color: #7d8fff !important; margin-right:10px;" class="material-icons" onclick="_modal_edit($(this.closest('tr')))">border_color</i></td>
 									</tr>
 								</g:each>
 							</tbody>
