@@ -170,9 +170,27 @@ grails.plugin.springsecurity.securityConfigType = SecurityConfigType.Requestmap
 grails.plugin.springsecurity.requestMap.className = "br.ufscar.sead.loa.remar.RequestMap"
 
 grails.plugin.springsecurity.logout.postOnly = false
-grails.plugin.springsecurity.userLookup.userDomainClassName = "br.ufscar.sead.loa.remar.User"
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = "br.ufscar.sead.loa.remar.UserRole"
-grails.plugin.springsecurity.authority.className = "br.ufscar.sead.loa.remar.Role"
+
+grails {
+    plugin {
+        springsecurity {
+            userLookup {
+                userDomainClassName = 'br.ufscar.sead.loa.remar.User'
+                usernamePropertyName = 'username'
+                enabledPropertyName = 'enabled'
+                passwordPropertyName = 'password'
+                authoritiesPropertyName = 'authorities'
+                authorityJoinClassName = 'br.ufscar.sead.loa.remar.UserRole'
+            }
+
+            authority {
+                className = 'br.ufscar.sead.loa.remar.Role'
+                nameField = 'authority'
+            }
+        }
+    }
+}
+
 grails.plugin.springsecurity.useSecurityEventListener = true
 grails.plugin.springsecurity.rememberMe.tokenValiditySeconds = TimeUnit.HOURS.toSeconds(8)
 grails.plugin.springsecurity.rememberMe.alwaysRemember = true
@@ -183,3 +201,9 @@ grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, cont
 }
 
 grails.web.url.converter = "hyphenated"
+
+grails.plugin.springsecurity.providerNames = [ // default: ['daoAuthenticationProvider', 'anonymousAuthenticationProvider', 'rememberMeAuthenticationProvider']
+        'samlAuthenticationProvider',
+        'daoAuthenticationProvider',
+        'anonymousAuthenticationProvider',
+        'rememberMeAuthenticationProvider']

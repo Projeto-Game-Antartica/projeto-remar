@@ -11,6 +11,8 @@ import br.ufscar.sead.loa.remar.Group
 import br.ufscar.sead.loa.remar.UserGroup
 
 import javax.servlet.http.HttpServletRequest
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SecurityFilterPosition
 
 class BootStrap {
     def grailsApplication
@@ -29,6 +31,15 @@ class BootStrap {
         HttpServletRequest.metaClass.isXhr = { ->
             'XMLHttpRequest' == delegate.getHeader('X-Requested-With')
         }
+
+        // Spring SAML configuration start
+        SpringSecurityUtils.clientRegisterFilter 'samlEntryPoint', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 1
+        SpringSecurityUtils.clientRegisterFilter 'metadataFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 2
+        SpringSecurityUtils.clientRegisterFilter 'samlProcessingFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 3
+        SpringSecurityUtils.clientRegisterFilter 'samlLogoutFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 4
+        SpringSecurityUtils.clientRegisterFilter 'samlLogoutProcessingFilter', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 5
+        SpringSecurityUtils.clientRegisterFilter 'samlIDPDiscovery', SecurityFilterPosition.SECURITY_CONTEXT_FILTER.order + 6
+        // Spring SAML configuration end
 
         if (!Role.list()) {
             new Role(authority: "ROLE_ADMIN").save flush: true
@@ -92,7 +103,13 @@ class BootStrap {
         RequestMap.findOrSaveByUrlAndConfigAttribute('/frame/**', 'IS_AUTHENTICATED_FULLY')
 
         for (url in [
-                '/', '/index', '/index/introduction', '/index/architecture', '/index/team', '/index/publications',
+            '/saml/**', '/idp/**'
+        ]) {
+            RequestMap.findOrSaveByUrlAndConfigAttribute(url, 'IS_AUTHENTICATED_ANONYMOUSLY')
+        }
+
+        for (url in [
+                '/', '/index', '/index/introduction', '/index/architecture', '/index/team', '/index/publications', '/index/idptest',
                 '/index/contact', '/doc/**', '/assets/**',
                 '/exportedResource/publicGames', '/exported-resource/searchGameByCategoryAndName', '/**/js/**', '/**/css/**',
                 '/**/images/**', '/**/favicon.ico', '/data/**', '/**/scss/**', '/**/less/**', '/**/fonts/**',

@@ -21,6 +21,8 @@ class IndexController {
         }
     }
 
+    def idptest() {}
+
     def introduction() {}
 
     def architecture() {}

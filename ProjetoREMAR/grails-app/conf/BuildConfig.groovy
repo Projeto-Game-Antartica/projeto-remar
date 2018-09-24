@@ -6,7 +6,7 @@ grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
-grails.server.port.http = 8080
+grails.server.port.http = 9090
 
 
 
@@ -43,14 +43,54 @@ grails.project.dependency.resolution = {
         mavenLocal()
         grailsCentral()
         mavenCentral()
+        mavenRepo "http://repo.spring.io/milestone/"
     }
 
     dependencies {
-        runtime "mysql:mysql-connector-java:5.1.29"
+        runtime "mysql:mysql-connector-java:5.1.24"
         compile "org.apache.ant:ant:1.9.6"
         compile "org.apache.ant:ant-launcher:1.9.6"
         compile "org.mongodb:mongodb-driver:3.2.1"
         compile "org.mongodb:bson:3.0.4"
+        compile 'commons-collections:commons-collections:3.2.1'
+        compile('commons-httpclient:commons-httpclient:3.1') {
+            excludes 'commons-codec', 'commons-logging', 'junit'
+        }
+
+        compile('ca.juliusdavies:not-yet-commons-ssl:0.3.9') {
+            excludes 'commons-httpclient', 'log4j'
+        }
+
+        compile('org.opensaml:opensaml:2.6.1') {
+            excludes 'commons-codec', 'commons-collections', 'commons-lang', 'esapi', 'jcip-annotations', 'jcl-over-slf4j', 'joda-time', 'jul-to-slf4j', 'junit', 'log4j-over-slf4j', 'logback-classic', 'openws', 'serializer', 'servlet-api', 'slf4j-api', 'spring-core', 'spring-mock', 'testng', 'velocity', 'xalan', 'xercesImpl', 'xml-apis', 'xml-resolver', 'xmlunit'
+        }
+
+        compile('org.opensaml:xmltooling:1.3.4') {
+            excludes 'bcprov-jdk15', 'commons-codec', 'jcip-annotations', 'jcl-over-slf4j', 'joda-time', 'jul-to-slf4j', 'junit', 'log4j-over-slf4j', 'logback-classic', 'not-yet-commons-ssl', 'serializer', 'slf4j-api', 'testng', 'xalan', 'xercesImpl', 'xml-apis', 'xml-resolver', 'xmlsec', 'xmlunit'
+        }
+
+        compile('org.apache.velocity:velocity:1.7') {
+            excludes 'ant', 'commons-collections', 'commons-lang', 'commons-logging', 'hsqldb', 'jdom', 'junit', 'log4j', 'logkit', 'oro', 'servlet-api', 'werken-xpath'
+        }
+
+        compile 'joda-time:joda-time:1.6.2'
+
+        compile 'org.bouncycastle:bcprov-jdk15:1.45'
+
+        compile 'org.apache.santuario:xmlsec:1.4.4'
+
+        compile('org.opensaml:openws:1.4.4') {
+            excludes 'commons-codec', 'commons-httpclient', 'jcip-annotations', 'jcl-over-slf4j', 'joda-time', 'jul-to-slf4j', 'junit', 'log4j-over-slf4j', 'logback-classic', 'serializer', 'servlet-api', 'slf4j-api', 'spring-core', 'spring-mock', 'testng', 'xalan', 'xercesImpl', 'xml-apis', 'xml-resolver', 'xmltooling', 'xmlunit'
+        }
+
+        compile('org.owasp.esapi:esapi:2.0.1') {
+            excludes 'antisamy', 'bsh-core', 'commons-beanutils-core', 'commons-collections', 'commons-configuration', 'commons-fileupload', 'commons-io', 'jsp-api', 'junit', 'log4j', 'servlet-api', 'xom'
+        }
+
+        compile('org.springframework.security.extensions:spring-security-saml2-core:1.0.0.RC2') {
+            excludes 'spring-security-core'
+            excludes 'spring-security-web'
+        }
     }
 
     plugins {
@@ -59,7 +99,6 @@ grails.project.dependency.resolution = {
 
         // plugins for the compile step
         compile ":asset-pipeline:1.9.9"
-        compile ":cache:1.1.8"
         compile ":quartz:1.0.2"
         compile ":recaptcha:1.2.0"
         compile ":rest-client-builder:2.0.0"
