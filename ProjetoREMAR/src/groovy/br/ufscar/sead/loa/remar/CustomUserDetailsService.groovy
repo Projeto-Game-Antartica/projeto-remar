@@ -63,10 +63,12 @@ class CustomUserDetailsService extends GormUserDetailsService implements GrailsU
 
         if (credential) {
             String username = getSamlUsername(credential)
+
             if (!username) {
                 throw new UsernameNotFoundException("No username supplied in saml response.")
             }
 
+            log.info "Username $username trying to login from SAML request."
             def user = generateSecurityUser(username)
             user = mapAdditionalAttributes(credential, user)
             if (user) {
@@ -104,7 +106,6 @@ class CustomUserDetailsService extends GormUserDetailsService implements GrailsU
     protected String getSamlUsername(credential) {
 
         if (samlUserAttributeMappings?.username) {
-
             def attribute = credential.getAttributeByName(samlUserAttributeMappings.username)
             def value = attribute?.attributeValues?.value
             return value?.first()
@@ -116,9 +117,10 @@ class CustomUserDetailsService extends GormUserDetailsService implements GrailsU
 
     protected Object mapAdditionalAttributes(credential, user) {
         samlUserAttributeMappings.each { key, value ->
-            // println key + " - " + value
             def attribute = credential.getAttributeByName(value)
             def samlValue = attribute?.attributeValues?.value
+            println "$key  - $value - $attribute - $samlValue - ${samlValue?.first()}"
+            log.info "Additional SAML attributes: $key  - $value - $attribute - $samlValue - ${samlValue?.first()}"
             if (samlValue) {
                 user."$key" = samlValue?.first()
             }
