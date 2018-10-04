@@ -1,6 +1,7 @@
 security {
 	saml {
-		userAttributeMappings = ['firstName': 'urn:mace:dir:attribute-def:givenName',
+		userAttributeMappings = ['username': 'urn:mace:dir:attribute-def:eppn',
+								 'firstName': 'urn:mace:dir:attribute-def:givenName',
 								 'lastName': 'urn:mace:dir:attribute-def:sn',
 								 'email': 'urn:mace:dir:attribute-def:mail']
 		userGroupToRoleMapping = [:]
